@@ -179,10 +179,35 @@
   //     return total + number * number;
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
+
+  // reduce ([array], callback function (accumulator, value, index, array itself))
   _.reduce = function(collection, iterator, accumulator) {
+      // two conditions:
+      // 1. if accumulator (third argument is undefined), accumulator = collection[0]
+      // length of collection is equal to 1
+      // shift value of second element as first element, then use _.each to iterate over collection
+      // return accumulator
+      //if (accumulator === undefined && collection.length === 1) {
+        //accumulator = collection[0];
+      if (accumulator === undefined) {
+        accumulator = collection[0];
+        collection = Array.prototype.slice.call(collection, 1);
+        _.each(collection, function(element) {
+          accumulator = iterator(accumulator, element);
+        })
+      } else {
+        _.each(collection,function(element){
+          accumulator = iterator(accumulator, element);
+        })
+      }
+    return accumulator;
   };
 
   // Determine if the array or object contains a given value (using `===`).
+ // array = [1,2,3,4]
+ //target = 2
+ //_.contains(array, 2) // true
+
   _.contains = function(collection, target) {
     // TIP: Many iteration problems can be most easily expressed in
     // terms of reduce(). Here's a freebie to demonstrate!
@@ -192,21 +217,61 @@
       }
       return item === target;
     }, false);
+    //
   };
 
 
   // Determine whether all of the elements match a truth test.
-  _.every = function(collection, iterator) {
-    // TIP: Try re-using reduce() here.
-  };
+  // _.every = function(collection, iterator) {
+  //   iterator = iterator || _.identity;
+  //   return !!_.reduce(collection, function(trueSoFar, value) {
+  //     return trueSoFar && iterator(value);
+  //   }, true);
+  // };
 
+  _.every = function(collection, iterator) {
+    var newarr = []
+    if(iterator === undefined){
+        _.each(collection, function(element){
+          if(element === true){
+            newarr.push(true);
+          }
+        });
+    } else{
+        _.each(collection, function(element){
+          if(iterator(element)){
+            newarr.push(true);
+          }
+      })
+    }
+    if(newarr.length === collection.length){
+      return true;
+    }else{
+      return false;
+    }
+  };
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
+  // using _.reduce
+  // _.some = function(collection, iterator) {
+      // iterator = iterator || _.identity;
+      // return !!_.reduce(collection, function(trueSoFar, element){
+      //   return trueSoFar || iterator(element);
+  //     // }, false);
+
+  // };
+
   _.some = function(collection, iterator) {
-    // TIP: There's a very clever way to re-use every() here.
+    if(iterator === undefined){
+      iterator = _.identity;
+    }
+      return _.reduce(collection, function(accumulator, element){
+        if(iterator(element)){
+          accumulator = true;
+        }
+        return accumulator;
+      }, false);
   };
-
-
   /**
    * OBJECTS
    * =======
@@ -226,6 +291,12 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+     _.each(arguments, function(args){
+        _.each(args, function(value, key){
+           obj[key] = value;
+        })
+     })
+     return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
