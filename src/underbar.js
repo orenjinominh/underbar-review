@@ -217,9 +217,7 @@
       }
       return item === target;
     }, false);
-    //
   };
-
 
   // Determine whether all of the elements match a truth test.
   // _.every = function(collection, iterator) {
@@ -302,6 +300,14 @@
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    _.each(arguments, function(args){
+      _.each(args, function(value, key){
+        if (obj[key] === undefined) {
+          obj[key] = value;
+        };
+      });
+   });
+   return obj;
   };
 
 
@@ -344,16 +350,29 @@
   // _.memoize should return a function that, when called, will check if it has
   // already computed the result for the given argument and return that value
   // instead if possible.
-  _.memoize = function(func) {
-  };
 
+  _.memoize = function(func) {
+    var results = {};
+    return function(...args){
+      var argskey = JSON.stringify(args);
+      if(!results[argskey]){
+        results[argskey] = func(...args)
+      }
+      return results[argskey]
+    }
+  };
   // Delays a function for the given number of milliseconds, and then calls
   // it with the arguments supplied.
   //
   // The arguments for the original function are passed after the wait
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
+
   _.delay = function(func, wait) {
+    var args = Array.prototype.slice.call(arguments, 2);
+    setTimeout(function(){
+      func.apply(this, args);
+    }, wait);
   };
 
 
@@ -368,7 +387,17 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
-  };
+    var copiedArray = Array.prototype.slice.call(array);
+    var newArray = [];
+
+    _.each(array, function(element) {
+      var random = Math.floor(Math.random() * copiedArray.length);
+      newArray.push(copiedArray[random]);
+      copiedArray.splice(random, 1);
+    })
+
+    return newArray;
+}
 
 
   /**

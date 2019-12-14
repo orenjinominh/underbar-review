@@ -195,11 +195,11 @@
         // Replace this line with an `expect` statement that tests
         // the behavior described by the `it` string
         //throw new Error('This test is missing.');
-        var destination = { x: 'x' };
+        var destination = { a: 'x' };
         var source = { a: 'b' };
         var extended = _.extend(destination, source);
 
-        expect(extended.x).to.equal('b');
+        expect(extended.a).to.equal('b');
       });
 
       it('should not override properties not found in the source', function() {
@@ -277,7 +277,15 @@
       it('should copy any property whose key is not already set on the target', function() {
         // Replace this line with an `expect` statement that tests
         // the behavior described by the `it` string
-        throw new Error('This test is missing.');
+        // throw new Error('This test is missing.');
+        var destination = {};
+        var source = {a: 1, b: 2, c:'three'};
+
+        _.defaults(destination, source);
+
+        expect(destination.a).to.equal(1);
+        expect(destination.b).to.equal(2);
+        expect(destination.c).to.equal('three');
       });
 
       it('should not copy a property if that key is already set on the target', function() {
